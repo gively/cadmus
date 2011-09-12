@@ -1,6 +1,11 @@
 require "cadmus/version"
 require "cadmus/controller_extensions"
 require "cadmus/routing"
+require "cadmus/markdown"
+require "cadmus/radius"
+require "cadmus/rendering"
+require "cadmus/slugs"
+require "cadmus/page"
 require "rails"
 
 module Cadmus
