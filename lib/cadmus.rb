@@ -5,6 +5,5 @@ require "rails"
 
 module Cadmus
   class Engine < Rails::Engine
-    engine_name :cadmus
   end
 end
