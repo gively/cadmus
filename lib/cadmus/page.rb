@@ -10,9 +10,6 @@ module Cadmus
         cattr_accessor :name_field
         self.name_field = (options.delete(:name_field) || :name).to_s
 
-        prerender_block = options.delete(:prerender)
-        cadmus_renderable :content, options, &prerender_block
-        
         belongs_to :parent, :polymorphic => true
         
         validates_presence_of name_field

@@ -16,13 +16,13 @@ module Cadmus
         contexts[namespace.to_s] = context
       end
     
-      def process(content)
+      def process(content, *args)
         contexts.each do |namespace, context|
           effective_context = case context
           when ::Radius::Context
             context
           when Proc
-            context.call
+            context.call(*args)
           end
           
           parser = ::Radius::Parser.new(effective_context, :tag_prefix => namespace.to_s)
