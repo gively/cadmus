@@ -65,8 +65,8 @@ module Cadmus
     
     private
     def setup_renderer(renderer)
-      renderer.markdown_options = markdown_options
-      renderer.radius_context_stack = radius_context_stack
+      renderer.markdown_options = (respond_to?(:markdown_options) ? markdown_options : {})
+      renderer.radius_context_stack = (respond_to?(:radius_context_stack) && radius_context_stack)
     end
   end
 end
