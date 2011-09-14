@@ -44,11 +44,11 @@ module Cadmus
       
       def initialize
         super
-        self.markdown_renderer = (Cadmus::Markdown::TextRenderer
+        self.markdown_renderer = Cadmus::Markdown::TextRenderer
         self.sanitizer = Rails.application.config.action_view.full_sanitizer || HTML::FullSanitizer.new
       end
   
-      def render
+      def render(content, *args)
         sanitizer.sanitize(super(content, *args))
       end
     end
