@@ -13,7 +13,7 @@ module Cadmus
         belongs_to :parent, :polymorphic => true
                 
         validates_presence_of name_field
-        validates_uniqueness_of slug_field, :within => [:parent_id, :parent_type]
+        validates_uniqueness_of slug_field, :scope => [:parent_id, :parent_type]
         validates_exclusion_of slug_field, :in => %w(pages edit)
   
         scope :global, :conditions => { :parent_id => nil, :parent_type => nil }
