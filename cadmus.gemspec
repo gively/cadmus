@@ -17,5 +17,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency("rails", ">= 3.0.0")
   gem.add_dependency("redcarpet", "~> 2.0.0b3")
-  gem.add_dependency("radius")
+  gem.add_dependency("liquid")
 end

@@ -1,15 +1,15 @@
 module Cadmus
   module Renderers
     class Base
-      attr_accessor :markdown_options, :markdown_renderer, :radius_context_stack
+      attr_accessor :markdown_options, :markdown_renderer, :default_assigns, :default_filters
       
-      def preprocess(content, *args)
-        return content unless @radius_context_stack
-        @radius_context_stack.process(content, *args)
+      def preprocess(template, options={})
+        options = options.with_indifferent_access        
+        template.render(assigns(options[:assigns]), filters(options[:filters]))
       end
       
-      def render(content, *args)
-        redcarpet_instance.render(preprocess(content, *args))
+      def render(template, options={})
+        redcarpet_instance.render(preprocess(template, options))
       end
       
       def markdown_options=(opts)
@@ -25,6 +25,14 @@ module Cadmus
       private
       def redcarpet_instance
         @redcarpet_instance ||= Redcarpet::Markdown.new(@markdown_renderer, @markdown_options)
+      end
+      
+      def assigns(passed_assigns=nil)
+        (self.default_assigns || {}).merge(passed_assigns || {})
+      end
+      
+      def filters(passed_filters=nil)
+        (self.default_filters || []) + (passed_filters || [])
       end
     end
     
@@ -63,10 +71,11 @@ module Cadmus
       Cadmus::Renderers::Text.new.tap { |renderer| setup_renderer(renderer) }
     end
     
-    private
+    protected
     def setup_renderer(renderer)
       renderer.markdown_options = (respond_to?(:markdown_options) ? markdown_options : {})
-      renderer.radius_context_stack = (respond_to?(:radius_context_stack) && radius_context_stack)
+      renderer.default_assigns = (respond_to?(:liquid_assigns) ? liquid_assigns : {})
+      renderer.default_filters = (respond_to?(:liquid_filters) ? liquid_filters : {})
     end
   end
 end

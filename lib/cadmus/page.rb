@@ -17,6 +17,12 @@ module Cadmus
         validates_exclusion_of slug_field, :in => %w(pages edit)
   
         scope :global, :conditions => { :parent_id => nil, :parent_type => nil }
+        
+        class_eval do
+          def liquid_template
+            Liquid::Template.parse(content)
+          end
+        end
       end      
     end
   end
