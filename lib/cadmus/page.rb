@@ -1,3 +1,5 @@
+require 'liquid'
+
 module Cadmus
   module Page
     extend ActiveSupport::Concern
