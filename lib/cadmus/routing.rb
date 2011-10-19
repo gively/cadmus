@@ -1,6 +1,7 @@
 class SlugConstraint
 	def self.matches?(request)
-		request.path.sub(/^\//, '').split(/\//).all? do |part|
+		page_glob = request.params["page_glob"]
+		page_glob.sub(/^\//, '').split(/\//).all? do |part|
 			part =~ /^[a-z][a-z0-9\-]*$/
 		end
 	end
