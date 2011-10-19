@@ -15,16 +15,30 @@ module Cadmus
 end
 
 ActionDispatch::Routing::Mapper.class_eval do
-	def cadmus_pages(controller)	
+	def cadmus_pages(options)	
+		options = options.with_indifferent_access
+		
+		controller = options[:controller] || 'pages'
+		
 		get "pages" => "#{controller}#index", :as => 'pages'
 		get "pages/new" => "#{controller}#new", :as => 'new_page'
 		post "pages" => "#{controller}#create"
 
 		slug_constraint = Cadmus::SlugConstraint.new
-	  get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
-  	get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
-	  put "*page_glob" => "#{controller}#update", :constraints => slug_constraint
-  	delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
-
+		
+		page_actions = Proc.new do
+			get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
+			get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
+			put "*page_glob" => "#{controller}#update", :constraints => slug_constraint
+			delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
+		end
+		
+		if options[:shallow]
+			instance_eval(&page_actions)
+		else
+			scope 'pages' do
+				instance_eval(&page_actions)
+			end
+		end
 	end
 end
