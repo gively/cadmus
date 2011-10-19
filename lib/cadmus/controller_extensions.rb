@@ -1,6 +1,7 @@
 module Cadmus
-	module ControllerExtensions
+	module PagesController
 		extend ActiveSupport::Concern
+		include Cadmus::Renderable
 		
 		included do
 			class << self
@@ -8,6 +9,7 @@ module Cadmus
 			end
 			
 			before_filter :load_parent_and_page
+		  helper_method :html_renderer, :text_renderer
 		end
 		
 		module ClassMethods
@@ -96,7 +98,7 @@ module Cadmus
 				end
 			end
 			
-			private
+			protected
 			def page_parent
 				return @page_parent if @page_parent
 			
@@ -111,7 +113,7 @@ module Cadmus
 			end
 			
 			def page_scope
-				@page_scope ||= page_parent ? page_parent.pages : Page.global
+				@page_scope ||= page_parent ? page_parent.pages : page_class.global
 			end
 			
 			def load_parent_and_page

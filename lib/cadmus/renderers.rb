@@ -1,15 +1,28 @@
 module Cadmus
   module Renderers
     class Base
-      attr_accessor :markdown_options, :markdown_renderer, :radius_context_stack
+      attr_accessor :markdown_options, :markdown_renderer, :default_assigns, :default_filters, :default_registers
       
-      def preprocess(content, *args)
-        return content unless @radius_context_stack
-        @radius_context_stack.process(content, *args)
+      def initialize
+        self.default_registers = {}
+        self.default_filters = []
+        self.default_assigns = {}
       end
       
-      def render(content, *args)
-        redcarpet_instance.render(preprocess(content, *args))
+      def preprocess(template, options={}) 
+        render_args = [
+          default_assigns.merge(options[:assigns] || {}), 
+          { 
+            :filters   => default_filters + (options[:filters] || []),
+            :registers => default_registers.merge(options[:registers] || {})
+          }
+        ]  
+       
+        template.render(*render_args)
+      end
+      
+      def render(template, options={})
+        redcarpet_instance.render(preprocess(template, options))
       end
       
       def markdown_options=(opts)
@@ -63,10 +76,12 @@ module Cadmus
       Cadmus::Renderers::Text.new.tap { |renderer| setup_renderer(renderer) }
     end
     
-    private
+    protected
     def setup_renderer(renderer)
-      renderer.markdown_options = markdown_options
-      renderer.radius_context_stack = radius_context_stack
+      renderer.markdown_options = (respond_to?(:markdown_options) ? markdown_options : {})
+      renderer.default_assigns = liquid_assigns if respond_to?(:liquid_assigns)
+      renderer.default_registers = liquid_registers if respond_to?(:liquid_registers)
+      renderer.default_filters = liquid_filters if respond_to?(:liquid_filters)
     end
   end
 end
