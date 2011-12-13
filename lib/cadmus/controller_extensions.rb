@@ -11,12 +11,6 @@ module Cadmus
 			before_filter :load_parent_and_page
 		  helper_method :html_renderer, :text_renderer
 		end
-		
-		module ClassMethods
-			def find_parent_by
-				@find_parent_by || :id
-			end
-		end
 	
 		module InstanceMethods
 		  # GET /pages
@@ -51,7 +45,7 @@ module Cadmus
 			end
 		
 			# GET /pages/1/edit
-			def edit
+			def edit			
 				render 'cadmus/pages/edit'
 			end
 		
@@ -102,14 +96,26 @@ module Cadmus
 			def page_parent
 				return @page_parent if @page_parent
 			
-				if self.class.page_parent_name && self.class.page_parent_class
-					parent_id_param = "#{self.class.page_parent_name}_id"
+				if page_parent_name && page_parent_class
+					parent_id_param = "#{page_parent_name}_id"
 					if params[parent_id_param]	
-						@page_parent = self.class.page_parent_class.where(self.class.find_parent_by => params[parent_id_param]).first
+						@page_parent = page_parent_class.where(find_parent_by => params[parent_id_param]).first
 					end
 				end
 				
 				@page_parent
+			end
+			
+			def page_parent_name
+        self.class.page_parent_name
+			end
+			
+			def page_parent_class
+			  self.class.page_parent_class
+			end
+			
+			def find_parent_by
+				self.class.find_parent_by || :id
 			end
 			
 			def page_scope
