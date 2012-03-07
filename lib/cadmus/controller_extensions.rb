@@ -93,6 +93,17 @@ module Cadmus
 			end
 			
 			protected
+      
+      # This gets kind of meta.
+      #
+      # If page_parent_name and page_parent_class are both defined for this class, this method uses it to find
+      # the parent object in which pages live.  For example, if page_parent_class is Blog and page_parent_name
+      # is "blog", then this is equivalent to calling:
+      #
+      # @page_parent = Blog.where(:id => params["blog_id"]).first
+      #
+      # If you don't want to use :id to find the parent object, then redefine the find_parent_by method to return
+      # what you want to use.
 			def page_parent
 				return @page_parent if @page_parent
 			

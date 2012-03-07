@@ -15,6 +15,22 @@ module Cadmus
 end
 
 ActionDispatch::Routing::Mapper.class_eval do
+  # Defines a "cadmus_pages" DSL command you can use in config/routes.rb.  This sets up a Cadmus
+  # PagesController that will accept the following routes:
+  #
+  # * GET /pages -> PagesController#index
+  # * GET /pages/new -> PagesController#new
+  # * POST /pages -> PagesController#create
+  # * GET /pages/anything/possibly-including/slashes/edit -> PagesController#edit
+  # * GET /pages/anything/possibly-including/slashes -> PagesController#show
+  # * PUT /pages/anything/possibly-including/slashes -> PagesController#update
+  # * DELETE /pages/anything/possibly-including/slashes -> PagesController#destroy
+  #
+  # cadmus_pages accepts two additional options:
+  #
+  # * :controller - changes which controller it maps to.  By default, it is "pages" (meaning PagesController).
+  # * :shallow - if set to "true", the edit, show, update and destroy routes won't include the "/pages" prefix.  Useful if you're
+  #   already inside a unique prefix.
 	def cadmus_pages(options)	
 		options = options.with_indifferent_access
 		
