@@ -1,4 +1,5 @@
 require 'redcarpet'
+require 'cadmus/renderers'
 
 module Cadmus
   module Markdown
@@ -53,6 +54,55 @@ module Cadmus
       def list_item(content, list_type)
         "  * #{content}"
       end
+    end
+  end
+  
+  module Renderers
+    class Markdown < Base
+      attr_accessor :markdown_options
+      
+      def initialize
+        super
+        @markdown_options = {}
+      end
+      
+      def markdown_options=(opts)
+        @markdown_options = opts
+        @redcarpet_instance = nil
+      end
+      
+      def preprocess(template, format, options={})
+        redcarpet_instance.render(super)
+      end
+      
+      private
+      def markdown_renderer(format)
+        case format.to_sym
+        when :html
+          Cadmus::Markdown.HtmlRenderer
+        when :text
+          Cadmus::Markdown.TextRenderer
+        else
+          raise "Format #{format.inspect} is not supported by #{self.class.name}"
+        end
+      end
+      
+      def redcarpet_instance(format)
+        Redcarpet::Markdown.new(markdown_renderer(format), markdown_options)
+      end
+    end
+  end
+  
+  module MarkdownRenderable
+    include Renderable
+    
+    def setup_renderer
+      super
+      renderer.markdown_options = markdown_options if respond_to?(:markdown_options)
+    end
+    
+    def cadmus_renderer_class
+      Cadmus::Renderers::Markdown
     end
   end
 end
