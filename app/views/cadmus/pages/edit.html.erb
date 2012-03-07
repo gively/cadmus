@@ -1,6 +1,6 @@
 <h1>Editing page</h1>
 
-<%= form_for(@page, :url => { :action => :update, :page_glob => @page.slug }) do |f| %>
+<%= form_for(@page, :url => { :action => :update, :page_glob => @page.slug }, :class => "edit_cadmus_page") do |f| %>
 	<%= render :partial => 'cadmus/pages/form', :locals => { :f => f } %>
 <% end -%>
 
