@@ -135,7 +135,7 @@ module Cadmus
 			
 			def load_parent_and_page
 				if params[:page_glob]
-					@page = page_scope.find_by_slug(params[:page_glob]) if params[:page_glob]
+					@page = page_scope.find_by_slug(params[:page_glob])
 					raise ActiveRecord::RecordNotFound.new("No page called #{params[:page_glob]}") unless @page
 				end
 			end
