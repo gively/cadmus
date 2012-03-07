@@ -1,7 +1,7 @@
 module Cadmus
   module Renderers
     class Base
-      attr_accessor :markdown_options, :markdown_renderer, :default_assigns, :default_filters, :default_registers
+      attr_accessor :default_assigns, :default_filters, :default_registers
       
       def initialize
         self.default_registers = {}
@@ -21,26 +21,6 @@ module Cadmus
         template.render(*render_args)
       end
       
-      def render(template, options={})
-        redcarpet_instance.render(preprocess(template, options))
-      end
-      
-      def markdown_options=(opts)
-        @markdown_options = opts
-        @redcarpet_instance = nil
-      end
-      
-      def markdown_renderer=(renderer)
-        @markdown_renderer = renderer
-        @redcarpet_instance = nil
-      end
-      
-      private
-      def redcarpet_instance
-        @redcarpet_instance ||= Redcarpet::Markdown.new(@markdown_renderer, @markdown_options)
-      end
-    end
-    
     class Html < Base
       def initialize
         super
@@ -78,7 +58,6 @@ module Cadmus
     
     protected
     def setup_renderer(renderer)
-      renderer.markdown_options = (respond_to?(:markdown_options) ? markdown_options : {})
       renderer.default_assigns = liquid_assigns if respond_to?(:liquid_assigns)
       renderer.default_registers = liquid_registers if respond_to?(:liquid_registers)
       renderer.default_filters = liquid_filters if respond_to?(:liquid_filters)

@@ -1,6 +1,5 @@
 require "cadmus/version"
 require "cadmus/routing"
-require "cadmus/markdown"
 require "cadmus/renderers"
 require "cadmus/controller_extensions"
 require "cadmus/slugs"
