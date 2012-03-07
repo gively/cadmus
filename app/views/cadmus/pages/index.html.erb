@@ -1,6 +1,6 @@
 <h1>
-	<% if @campaign -%>
-		<%= @campaign.name %>
+	<% if @page_parent && @page_parent.respond_to?(:name) -%>
+		<%= @page_parent.name %>
 	<% else -%>
 		About us
 	<% end -%>
