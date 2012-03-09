@@ -9,7 +9,7 @@ module Cadmus
 			end
 			
 			before_filter :load_parent_and_page
-		  helper_method :html_renderer, :text_renderer
+		  helper_method :cadmus_renderer
 		end
 	
 		module InstanceMethods
