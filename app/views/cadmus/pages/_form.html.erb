@@ -21,11 +21,24 @@
 		<%= f.text_field :slug %>
 	</p>
 </div>
+<p>Type html in the box below and see a preview right under it</p>
 <div class="field">
 	<%= f.label :content %>
-	<%= f.text_area :content, :style => "font-family: monospace; width: 60em;" %>
+	<%= f.text_area :content, :style => "font-family: monospace; width: 60em;", 
+		:class => "cadmus-previewable-html", :"data-preview-in" => "html-preview" %>
 </div>
 <div class="actions">
 	<%= f.submit %>
 </div>
+
+<%= javascript_include_tag "cadmus.previewablehtml.js" %>
+<script type="text/javascript">
+$(document).ready(function(){		
+  $('.cadmus-previewable-html').cadmusPreviewableHtml();
+});
+</script>
+<p><b>Rendered html preview</b></p>
+<div id="html-preview" style="border:1px solid;">
+</div>
+<br/><br/>
 
