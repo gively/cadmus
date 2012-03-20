@@ -19,12 +19,12 @@ module Cadmus
             :registers => default_registers.merge(options[:registers] || {})
           }
         ]  
-       
+        
         template.render(*render_args)
       end
       
       def render(template, format, options={})
-        content = preprocess(template, format, options={})
+        content = preprocess(template, format, options)
         
         case format.to_sym
         when :html
