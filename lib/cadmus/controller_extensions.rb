@@ -21,6 +21,7 @@ module Cadmus
 				respond_to do |format|
 					format.html { render 'cadmus/pages/index' }
 					format.xml  { render :xml => @pages }
+          format.json { render :json => @pages }
 				end
 			end
 		
@@ -30,6 +31,7 @@ module Cadmus
 				respond_to do |format|
 					format.html { render 'cadmus/pages/show' }
 					format.xml  { render :xml => @page }
+          format.json { render :json => @page }
 				end
 			end
 		
@@ -41,6 +43,7 @@ module Cadmus
 				respond_to do |format|
 					format.html { render 'cadmus/pages/new' }
 					format.xml  { render :xml => @page }
+          format.json { render :json => @page }
 				end
 			end
 		
@@ -59,9 +62,11 @@ module Cadmus
 						dest = { :action => 'show', :page_glob => @page.slug }
 						format.html { redirect_to(dest, :notice => 'Page was successfully created.') }
 						format.xml  { render :xml => @page, :status => :created, :location => dest }
+            format.json { render :json => @page, :status => :created, :location => dest }
 					else
 						format.html { render 'cadmus/pages/new' }
 						format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
+            format.json { render :json => @page.errors, :status => :unprocessable_entity }
 					end
 				end
 			end
@@ -74,9 +79,11 @@ module Cadmus
 						dest = { :action => 'show', :page_glob => @page.slug }
 						format.html { redirect_to(dest, :notice => 'Page was successfully updated.') }
 						format.xml  { head :ok }
+            format.json { head :ok }
 					else
 						format.html { render 'cadmus/pages/edit' }
 						format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
+						format.json { render :json => @page.errors, :status => :unprocessable_entity }
 					end
 				end
 			end
@@ -89,6 +96,7 @@ module Cadmus
 				respond_to do |format|
 					format.html { redirect_to(:action => :index) }
 					format.xml  { head :ok }
+          format.json { head :ok }
 				end
 			end
 			
