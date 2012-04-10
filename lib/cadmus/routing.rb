@@ -1,5 +1,14 @@
 module Cadmus
+  # A routing constraint that determines whether a request has a valid Cadmus page glob.  A
+  # page glob consists of one or more valid slug parts separated by forward slashes.  A valid
+  # slug part consists of a lower-case letter followed by any combination of lower-case letters,
+  # digits, and hyphens.
 	class SlugConstraint
+    # @param request an HTTP request object.
+    # @return [Boolean] true if this request's +:page_glob+ parameter is a valid Cadmus page
+    #   glob, false if it's not.  Allows +:page_glob+ to be nil only if the Rails environment
+    #   is +test+, because +assert_recognizes+ doesn't always pass the full params hash
+    #   including globbed parameters.
 		def matches?(request)
 			page_glob = request.symbolized_path_parameters[:page_glob]
 			

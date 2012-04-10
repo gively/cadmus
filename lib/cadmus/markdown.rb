@@ -3,10 +3,14 @@ require 'cadmus/renderers'
 
 module Cadmus
   module Markdown
+    # A Redcarpet renderer that outputs HTML and uses SmartyPants smart
+    # quotes.
     class HtmlRenderer < Redcarpet::Render::HTML
       include Redcarpet::Render::SmartyPants
     end
     
+    # A Redcarpet renderer that outputs formatted plain text (that looks quite similar to
+    # the Markdown input sent to it).
     class TextRenderer < Redcarpet::Render::Base
       def normal_text(text)
         text
@@ -58,7 +62,16 @@ module Cadmus
   end
   
   module Renderers
+    
+    # A Cadmus renderer that handles Markdown input using the Redcarpet rendering engine.
+    # It can produce +:html+ and +:text+ formats, using Cadmus::Markdown::HtmlRenderer
+    # and Cadmus::Markdown::TextRenderer.
+    #
+    # Liquid is rendered first, then the result is processed as Markdown.
     class Markdown < Base
+      
+      # Additional options to be passed as the second argument to the Redcarpet::Markdown
+      # constructor.
       attr_accessor :markdown_options
       
       def initialize
@@ -93,6 +106,9 @@ module Cadmus
     end
   end
   
+  # An alternative to Cadmus::Renderable that will use Cadmus::Renderers::Markdown as the
+  # renderer class.  Additionally, it will set the renderer's +markdown_options+ to the
+  # return value of the +markdown_options+ method, if that method is defined.
   module MarkdownRenderable
     include Renderable
     
