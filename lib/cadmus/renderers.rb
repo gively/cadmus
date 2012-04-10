@@ -1,4 +1,13 @@
 module Cadmus
+  
+  # A Cadmus renderer is an object that handles the rendering of +Liquid::Template+s to output formats
+  # such as HTML or plain text.  A renderer provides several features over and above what plain
+  # Liquid does:
+  #
+  # * Automatic removal of HTML tags for plain text output
+  # * Integration with Rails 3's HTML escaping functionality
+  # * Ability to specify default assigns, filters, and registers and augment them on a per-call basis
+  # * Ability to render to multiple output formats from a single renderer
   module Renderers
     class Base
       attr_accessor :default_assigns, :default_filters, :default_registers, :html_sanitizer
