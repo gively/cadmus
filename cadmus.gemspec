@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["natbudin@gmail.com", "bentael@gmail.com"]
   gem.description   = %q{Why deal with setting up a separate CMS?  Cadmus is just a little bit of CMS and fits nicely into your existing app.  It can be used for allowing users to customize areas of the site, for creating editable "about us" pages, and more.}
   gem.summary       = %q{Embeddable CMS for Rails 3 apps}
-  gem.homepage      = ""
+  gem.homepage      = "http://github.com/gively/cadmus"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
