@@ -40,7 +40,8 @@ ActionDispatch::Routing::Mapper.class_eval do
   # * :controller - changes which controller it maps to.  By default, it is "pages" (meaning PagesController).
   # * :shallow - if set to "true", the edit, show, update and destroy routes won't include the "/pages" prefix.  Useful if you're
   #   already inside a unique prefix.
-	def cadmus_pages(options)	
+	def cadmus_pages(options = nil)	
+    options ||= {}
 		options = options.with_indifferent_access
 		
 		controller = options[:controller] || 'pages'
