@@ -62,94 +62,94 @@ module Cadmus
   #        BookPage
   #      end
   #    end
-	module PagesController
-		extend ActiveSupport::Concern
-		include Cadmus::Renderable
-		
-		included do
-			class << self
-				attr_accessor :page_parent_name, :page_parent_class, :find_parent_by
-			end
-			
-			before_filter :load_parent_and_page
-		  helper_method :cadmus_renderer
-		end
-	
-		def index
-			@pages = page_scope.order(:name).all
-			
-			respond_to do |format|
-				format.html { render 'cadmus/pages/index' }
-				format.xml  { render :xml => @pages }
+  module PagesController
+    extend ActiveSupport::Concern
+    include Cadmus::Renderable
+    
+    included do
+      class << self
+        attr_accessor :page_parent_name, :page_parent_class, :find_parent_by
+      end
+      
+      before_filter :load_parent_and_page
+      helper_method :cadmus_renderer
+    end
+  
+    def index
+      @pages = page_scope.order(:name).all
+      
+      respond_to do |format|
+        format.html { render 'cadmus/pages/index' }
+        format.xml  { render :xml => @pages }
         format.json { render :json => @pages }
-			end
-		end
-		
-		def show
-			respond_to do |format|
-				format.html { render 'cadmus/pages/show' }
-				format.xml  { render :xml => @page }
+      end
+    end
+    
+    def show
+      respond_to do |format|
+        format.html { render 'cadmus/pages/show' }
+        format.xml  { render :xml => @page }
         format.json { render :json => @page }
-			end
-		end
-		
-		def new
-			@page = page_scope.new(params[:page])
-			
-			respond_to do |format|
-				format.html { render 'cadmus/pages/new' }
-				format.xml  { render :xml => @page }
+      end
+    end
+    
+    def new
+      @page = page_scope.new(params[:page])
+      
+      respond_to do |format|
+        format.html { render 'cadmus/pages/new' }
+        format.xml  { render :xml => @page }
         format.json { render :json => @page }
-			end
-		end
-		
-		def edit			
-			render 'cadmus/pages/edit'
-		end
-		
-		def create
-			@page = page_scope.new(params[:page])
-			
-			respond_to do |format|
-				if @page.save
-					dest = { :action => 'show', :page_glob => @page.slug }
-					format.html { redirect_to(dest, :notice => 'Page was successfully created.') }
-					format.xml  { render :xml => @page, :status => :created, :location => dest }
+      end
+    end
+    
+    def edit      
+      render 'cadmus/pages/edit'
+    end
+    
+    def create
+      @page = page_scope.new(params[:page])
+      
+      respond_to do |format|
+        if @page.save
+          dest = { :action => 'show', :page_glob => @page.slug }
+          format.html { redirect_to(dest, :notice => 'Page was successfully created.') }
+          format.xml  { render :xml => @page, :status => :created, :location => dest }
           format.json { render :json => @page, :status => :created, :location => dest }
-				else
-					format.html { render 'cadmus/pages/new' }
-					format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
+        else
+          format.html { render 'cadmus/pages/new' }
+          format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
           format.json { render :json => @page.errors, :status => :unprocessable_entity }
-				end
-			end
-		end
-		
-		def update
-			respond_to do |format|
-				if @page.update_attributes(params[:page])
-					dest = { :action => 'show', :page_glob => @page.slug }
-					format.html { redirect_to(dest, :notice => 'Page was successfully updated.') }
-					format.xml  { head :ok }
+        end
+      end
+    end
+    
+    def update
+      respond_to do |format|
+        if @page.update_attributes(params[:page])
+          dest = { :action => 'show', :page_glob => @page.slug }
+          format.html { redirect_to(dest, :notice => 'Page was successfully updated.') }
+          format.xml  { head :ok }
           format.json { head :ok }
-				else
-					format.html { render 'cadmus/pages/edit' }
-					format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
-					format.json { render :json => @page.errors, :status => :unprocessable_entity }
-				end
-			end
-		end
-		
-		def destroy
-			@page.destroy
-		
-			respond_to do |format|
-				format.html { redirect_to(:action => :index) }
-				format.xml  { head :ok }
+        else
+          format.html { render 'cadmus/pages/edit' }
+          format.xml  { render :xml => @page.errors, :status => :unprocessable_entity }
+          format.json { render :json => @page.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+    
+    def destroy
+      @page.destroy
+    
+      respond_to do |format|
+        format.html { redirect_to(:action => :index) }
+        format.xml  { head :ok }
         format.json { head :ok }
-			end
-		end
-			
-		protected
+      end
+    end
+      
+    protected
       
     # This gets kind of meta.
     #
@@ -161,38 +161,38 @@ module Cadmus
     #
     # If you don't want to use :id to find the parent object, then redefine the find_parent_by method to return
     # what you want to use.
-		def page_parent
-			return @page_parent if @page_parent
-			
-			if page_parent_name && page_parent_class
-				parent_id_param = "#{page_parent_name}_id"
-				if params[parent_id_param]	
-					@page_parent = page_parent_class.where(find_parent_by => params[parent_id_param]).first
-				end
-			end
-				
-			@page_parent
-		end
-		
+    def page_parent
+      return @page_parent if @page_parent
+      
+      if page_parent_name && page_parent_class
+        parent_id_param = "#{page_parent_name}_id"
+        if params[parent_id_param]  
+          @page_parent = page_parent_class.where(find_parent_by => params[parent_id_param]).first
+        end
+      end
+        
+      @page_parent
+    end
+    
     # Returns the name of the page parent object.  This will be used for determining the parameter name for
     # finding the parent object.  For example, if the page parent name is "wiki", the finder will look in
     # params["wiki_id"] to determine the object ID.
     #
     # By default, this will return the value of page_parent_name set at the controller class level, but can 
     # be overridden for cases where the page parent name must be determined on a per-request basis.
-		def page_parent_name
+    def page_parent_name
       self.class.page_parent_name
-		end
-		
+    end
+    
     # Returns the class of the page parent object.  For example, if the pages used by this controller are
     # children of a Section object, this method should return the Section class.
     #
     # By default, this will return the value of page_parent_class set at the controller class level, but can
     # be overridden for cases where the page parent class must be determined on a per-request basis.
-		def page_parent_class
-		  self.class.page_parent_class
-		end
-		
+    def page_parent_class
+      self.class.page_parent_class
+    end
+    
     # Returns the field used to find the page parent object.  By default this is :id, but if you need to
     # find the page parent object using a different parameter (for example, if you use a "slug" field for
     # part of the URL), this can be changed.
@@ -200,22 +200,22 @@ module Cadmus
     # By default this method takes its value from the "find_parent_by" accessor set at the controller class
     # level, but it can be overridden for cases where the finder field name should be determined on a
     # per-request basis.
-		def find_parent_by
-			self.class.find_parent_by || :id
-		end
-		
+    def find_parent_by
+      self.class.find_parent_by || :id
+    end
+    
     # Returns the ActiveRecord::Relation that will be used for finding pages.  If there is a page parent
     # for this request, this will be the "pages" scope defined by the parent object.  If there isn't,
     # this will be the "global" scope of the page class (i.e. pages with no parent object).
-		def page_scope
-			@page_scope ||= page_parent ? page_parent.pages : page_class.global
-		end
-		
-		def load_parent_and_page
-			if params[:page_glob]
-				@page = page_scope.find_by_slug(params[:page_glob])
-				raise ActiveRecord::RecordNotFound.new("No page called #{params[:page_glob]}") unless @page
-			end
-		end
-	end
+    def page_scope
+      @page_scope ||= page_parent ? page_parent.pages : page_class.global
+    end
+    
+    def load_parent_and_page
+      if params[:page_glob]
+        @page = page_scope.find_by_slug(params[:page_glob])
+        raise ActiveRecord::RecordNotFound.new("No page called #{params[:page_glob]}") unless @page
+      end
+    end
+  end
 end

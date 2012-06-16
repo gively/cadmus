@@ -3,24 +3,24 @@ module Cadmus
   # page glob consists of one or more valid slug parts separated by forward slashes.  A valid
   # slug part consists of a lower-case letter followed by any combination of lower-case letters,
   # digits, and hyphens.
-	class SlugConstraint
+  class SlugConstraint
     # @param request an HTTP request object.
     # @return [Boolean] true if this request's +:page_glob+ parameter is a valid Cadmus page
     #   glob, false if it's not.  Allows +:page_glob+ to be nil only if the Rails environment
     #   is +test+, because +assert_recognizes+ doesn't always pass the full params hash
     #   including globbed parameters.
-		def matches?(request)
-			page_glob = request.symbolized_path_parameters[:page_glob]
-			
-			# assert_recognizes doesn't pass the full params hash as we would in a real Rails
-			# application.  So we have to always pass this constraint if we're testing.
-			return true if page_glob.nil? && Rails.env.test?
-			
-			page_glob.sub(/^\//, '').split(/\//).all? do |part|
-				part =~ /^[a-z][a-z0-9\-]*$/
-			end
-		end
-	end
+    def matches?(request)
+      page_glob = request.symbolized_path_parameters[:page_glob]
+      
+      # assert_recognizes doesn't pass the full params hash as we would in a real Rails
+      # application.  So we have to always pass this constraint if we're testing.
+      return true if page_glob.nil? && Rails.env.test?
+      
+      page_glob.sub(/^\//, '').split(/\//).all? do |part|
+        part =~ /^[a-z][a-z0-9\-]*$/
+      end
+    end
+  end
 end
 
 ActionDispatch::Routing::Mapper.class_eval do
@@ -40,31 +40,31 @@ ActionDispatch::Routing::Mapper.class_eval do
   # * :controller - changes which controller it maps to.  By default, it is "pages" (meaning PagesController).
   # * :shallow - if set to "true", the edit, show, update and destroy routes won't include the "/pages" prefix.  Useful if you're
   #   already inside a unique prefix.
-	def cadmus_pages(options = nil)	
+  def cadmus_pages(options = nil) 
     options ||= {}
-		options = options.with_indifferent_access
-		
-		controller = options[:controller] || 'pages'
-		
-		get "pages" => "#{controller}#index", :as => 'pages'
-		get "pages/new" => "#{controller}#new", :as => 'new_page'
-		post "pages" => "#{controller}#create"
+    options = options.with_indifferent_access
+    
+    controller = options[:controller] || 'pages'
+    
+    get "pages" => "#{controller}#index", :as => 'pages'
+    get "pages/new" => "#{controller}#new", :as => 'new_page'
+    post "pages" => "#{controller}#create"
 
-		slug_constraint = Cadmus::SlugConstraint.new
-		
-		page_actions = Proc.new do
-			get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
-			get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
-			put "*page_glob" => "#{controller}#update", :constraints => slug_constraint
-			delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
-		end
-		
-		if options[:shallow]
-			instance_eval(&page_actions)
-		else
-			scope 'pages' do
-				instance_eval(&page_actions)
-			end
-		end
-	end
+    slug_constraint = Cadmus::SlugConstraint.new
+    
+    page_actions = Proc.new do
+      get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
+      get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
+      put "*page_glob" => "#{controller}#update", :constraints => slug_constraint
+      delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
+    end
+    
+    if options[:shallow]
+      instance_eval(&page_actions)
+    else
+      scope 'pages' do
+        instance_eval(&page_actions)
+      end
+    end
+  end
 end
