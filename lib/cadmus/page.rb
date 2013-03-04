@@ -38,7 +38,7 @@ module Cadmus
         validates_uniqueness_of slug_field, :scope => [:parent_id, :parent_type]
         validates_exclusion_of slug_field, :in => %w(pages edit)
   
-        scope :global, :conditions => { :parent_id => nil, :parent_type => nil }
+        scope :global, lambda { where(:parent_id => nil, :parent_type => nil) }
         
         class_eval do
           def liquid_template
