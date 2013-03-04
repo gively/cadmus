@@ -16,7 +16,7 @@ module Cadmus
       # application.  So we have to always pass this constraint if we're testing.
       return true if page_glob.nil? && Rails.env.test?
       
-      page_glob.sub(/^\//, '').split(/\//).all? do |part|
+      page_glob.sub(/\A\//, '').split(/\//).all? do |part|
         part =~ /\A[a-z][a-z0-9\-]*\z/
       end
     end

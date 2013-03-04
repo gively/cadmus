@@ -17,7 +17,7 @@
 <div class="field">
 	<%= f.label :slug, "URL" %>
 	<p>
-		<%= url_for(:action => 'show', :page_glob => "slug", :only_path => false).sub(/slug$/, '') %>
+		<%= url_for(:action => 'show', :page_glob => "slug", :only_path => false).sub(/slug\Z/, '') %>
 		<%= f.text_field :slug %>
 	</p>
 </div>

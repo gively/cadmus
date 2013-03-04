@@ -8,7 +8,7 @@ module Cadmus
     #
     # For example, +about-us/people+, +special-deals+, and +winter-2012+ are all valid slugs, but
     # +3-things+, +123+, +nobody-lives-here!+, and +/root-page+ aren't.
-    SLUG_REGEX = /^([a-z][a-z0-9\-]*\/)*[a-z][a-z0-9\-]*$/
+    SLUG_REGEX = /\A([a-z][a-z0-9\-]*\/)*[a-z][a-z0-9\-]*\z/
   
     # Converts a string to a valid slug part by changing all whitespace to hyphens, converting all
     # upper-case letters to lower-case, removing all remaining non-alphanumeric, non-hyphen
@@ -19,7 +19,7 @@ module Cadmus
     # * "21 guns" becomes "guns"
     # * "We love you, Conrad!!!1" becomes "we-love-you-conrad1"
     def self.slugify(string)
-      string.to_s.downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9\-]/, '').sub(/^[^a-z]+/, '')
+      string.to_s.downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9\-]/, '').sub(/\A[^a-z]+/, '')
     end
     
     # An extension for ActiveRecord::Base that adds a +has_slug+ method.  This can also be
