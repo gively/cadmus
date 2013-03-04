@@ -17,7 +17,7 @@ module Cadmus
       return true if page_glob.nil? && Rails.env.test?
       
       page_glob.sub(/^\//, '').split(/\//).all? do |part|
-        part =~ /^[a-z][a-z0-9\-]*$/
+        part =~ /\A[a-z][a-z0-9\-]*\z/
       end
     end
   end
