@@ -94,7 +94,7 @@ module Cadmus
     end
     
     def new
-      @page = page_scope.new(page_params)
+      @page = page_scope.new
       
       respond_to do |format|
         format.html { render 'cadmus/pages/new' }
