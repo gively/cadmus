@@ -1,3 +1,7 @@
+## cadmus 0.4.7 (07-15-2013)
+
+* Bugfix: don't try to use the parameters in the new action.  This prevents us from raising errors unnecessarily for required params in Rails 4.
+
 ## cadmus 0.4.6 (07-15-2013)
 
 * Changes for Rails 4 compatibility:
