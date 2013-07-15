@@ -1,3 +1,9 @@
+## cadmus 0.4.6 (07-15-2013)
+
+* Changes for Rails 4 compatibility:
+** Allow PUT or PATCH for the update action
+** Implement a page_params protected method in page controllers, which you can override to get strong_parameters support
+
 ## cadmus 0.4.5 (03-04-2013)
 
 * Change all the other uses of ^ and $ in regexes to \A and \z

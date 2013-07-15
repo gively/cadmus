@@ -94,7 +94,7 @@ module Cadmus
     end
     
     def new
-      @page = page_scope.new(params[:page])
+      @page = page_scope.new(page_params)
       
       respond_to do |format|
         format.html { render 'cadmus/pages/new' }
@@ -108,7 +108,7 @@ module Cadmus
     end
     
     def create
-      @page = page_scope.new(params[:page])
+      @page = page_scope.new(page_params)
       
       respond_to do |format|
         if @page.save
@@ -126,7 +126,7 @@ module Cadmus
     
     def update
       respond_to do |format|
-        if @page.update_attributes(params[:page])
+        if @page.update_attributes(page_params)
           dest = { :action => 'show', :page_glob => @page.slug }
           format.html { redirect_to(dest, :notice => 'Page was successfully updated.') }
           format.xml  { head :ok }
@@ -209,6 +209,10 @@ module Cadmus
     # this will be the "global" scope of the page class (i.e. pages with no parent object).
     def page_scope
       @page_scope ||= page_parent ? page_parent.pages : page_class.global
+    end
+    
+    def page_params
+      params[:page]
     end
     
     def load_parent_and_page

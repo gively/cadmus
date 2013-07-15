@@ -21,8 +21,10 @@ instead, just use forward-slash characters in the page slug to simulate folders,
 
 First, add Cadmus to your Gemfile:
 
-    gem 'cadmus'
-    gem 'redcarpet'   # (required only if you intend to use Cadmus' Markdown support)
+```ruby
+gem 'cadmus'
+gem 'redcarpet'   # (required only if you intend to use Cadmus' Markdown support)
+```
 
 The next step is to create a Page model.  Your app can have multiple Page models if you like, but for this example, we'll just
 create one.
@@ -32,24 +34,55 @@ create one.
 You'll need to tweak the generated migration and model slightly.  In the migration, after the `create_pages` block, add a 
 unique index on the parent and slug columns:
 
-    add_index :pages, [:parent_type, :parent_id, :slug], :unique => true
+```ruby
+add_index :pages, [:parent_type, :parent_id, :slug], :unique => true
+```
 	
 And in the model, add a `cadmus_page` declaration:
 
-    class Page < ActiveRecord::Base
-	  cadmus_page
-	end
+```ruby
+class Page < ActiveRecord::Base
+  cadmus_page
+end
+```
 
 You'll need a controller to deal with your pages.  Here's a minimal example of one:
 
-    class PagesController < ApplicationController
-	  include Cadmus::PagesController
-	  
-	  protected
-	  def page_class
-	    Page
-	  end
-	end
+```ruby
+class PagesController < ApplicationController
+  include Cadmus::PagesController
+
+  protected
+  def page_class
+    Page
+  end
+end
+```
+
+If you're on Rails 4 (or using the `strong_parameters` gem) you'll probably want to use forbidden attributes protection.
+Here's how you do that:
+
+```ruby
+class Page < ActiveRecord::Base
+  include ActiveModel::ForbiddenAttributesProtection
+  cadmus_page
+end
+```
+
+```ruby
+class PagesController < ApplicationController
+  include Cadmus::PagesController
+
+  protected
+  def page_params
+    params.require(:page).permit(:name, :slug, :content)
+  end
+  
+  def page_class
+    Page
+  end
+end
+```
 
 `Cadmus::PagesController` automatically adds the seven RESTful resource methods to your controller.  It requires that you
 define a `page_class` method that returns the class for pages it's dealing with.  (This could potentially return different
@@ -58,9 +91,11 @@ types of page.)
 
 Finally, you'll need to create routes for this controller.  Cadmus provides a built-in helper for that:
 
-    MyApp::Application.routes.draw do
-	  cadmus_pages
-	end
+```ruby
+MyApp::Application.routes.draw do
+  cadmus_pages
+end
+```
 	
 This will create the following routes:
 
@@ -68,6 +103,7 @@ This will create the following routes:
 * GET /pages/new => PagesController#new
 * POST /pages => PagesController#create
 * GET /pages/slug => PagesController#show
+* PATCH /pages/slug => PagesController#update
 * PUT /pages/slug => PagesController#update
 * DELETE /pages/slug => PagesController#destroy
 
@@ -76,26 +112,30 @@ This will create the following routes:
 The pages controller is where you'll need to hook into any authorization or authentication system your app might use.  
 We use CanCan, so here's an example of how we do that:
 
-    class PagesController < ApplicationController
-	  include Cadmus::PagesController
-	  
-	  authorize_resource :page
-	  
-	  protected
-	  def page_class
-	    Page
-	  end
-	end
+```ruby
+class PagesController < ApplicationController
+  include Cadmus::PagesController
+  
+  authorize_resource :page
+  
+  protected
+  def page_class
+    Page
+  end
+end
+```
+
+```ruby
+class Ability
+  def initialize(user)
+    can :read, Page
+      return unless user
 	
-	class Ability
-	  def initialize(user)
-	    can :read, Page
-        return unless user
-		
-        # in this example, we've added an owner_id column to our Page model
-        can :manage, Page, :owner_id => user.id
-	  end
-	end
+      # in this example, we've added an owner_id column to our Page model
+      can :manage, Page, :owner_id => user.id
+  end
+end
+```
 
 Easy-peasy.  You can use other authorization plugins in a similar way - with Cadmus, you control the CMS models,
 controllers and routes, so you can add whatever code is appropriate for your app.
@@ -108,49 +148,55 @@ content pages as well.
 
 You already have the following routes set up in your routes.rb file:
 
-    DugoutCoach::Application.routes.draw do
-	  resources :teams do
-	    resources :players
-        resources :schedule
-	  end
-	  
-	  cadmus_pages # for global pages on your site
-	end
+```ruby
+DugoutCoach::Application.routes.draw do
+  resources :teams do
+    resources :players
+      resources :schedule
+  end
+  
+  cadmus_pages # for global pages on your site
+end
+```
 
 So, for example, the URL for the Cambridge Cosmonauts might be http://dugoutcoach.net/teams/cosmonauts.  They also
 have http://dugoutcoach.net/teams/cosmonauts/players and http://dugoutcoach.net/teams/cosmonauts/schedule.
 
 You can add a "pages" namespace pretty easily:
 
-    DugoutCoach::Application.routes.draw do
-	  resources :teams do
-	    resources :players
-        resources :schedule
-        cadmus_pages :controller => :team_pages
-	  end
-	  
-	  cadmus_pages
-	end
+```ruby
+DugoutCoach::Application.routes.draw do
+  resources :teams do
+    resources :players
+      resources :schedule
+      cadmus_pages :controller => :team_pages
+  end
+
+  cadmus_pages
+end
+```
 
 Now you have a way of separating team-specific pages from global pages on the site.  The URLs for these pages might be,
 for example, http://dugoutcoach.net/teams/cosmonauts/directions, or 
 http://dugoutcoach.net/teams/cosmonauts/promotions/free-hat-day (remember, Cadmus slugs can contain slashes).  We'll
 now need a TeamPages controller to handle these:
 
-    class TeamPagesController < ApplicationController
-	  include Cadmus::PagesController
-	  
-	  self.page_parent_class = Team   # page's parent is a Team
-	  self.page_parent_name = "team"  # parent ID is in params[:team_id]
-	  self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
-	  
-	  authorize_resource :page
-	  
-	  protected
-	  def page_class
-	    Page
-	  end
-	end
+```ruby
+class TeamPagesController < ApplicationController
+  include Cadmus::PagesController
+  
+  self.page_parent_class = Team   # page's parent is a Team
+  self.page_parent_name = "team"  # parent ID is in params[:team_id]
+  self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
+  
+  authorize_resource :page
+  
+  protected
+  def page_class
+    Page
+  end
+end
+```
 
 Note that for this example, we've kept the same `Page` class for both controllers.  We could have also created a
 separate `TeamPage` model, but that's not required.
@@ -162,15 +208,17 @@ in them just because they created them themselves?
 
 Chill out, Cosmonauts.  Cadmus makes it easy:
 
-    DugoutCoach::Application.routes.draw do
-	  resources :teams do
-	    resources :players
-        resources :schedule
-        cadmus_pages :controller => :team_pages, :shallow => true
-	  end
-	  
-	  cadmus_pages
-	end
+```ruby
+DugoutCoach::Application.routes.draw do
+  resources :teams do
+    resources :players
+      resources :schedule
+      cadmus_pages :controller => :team_pages, :shallow => true
+  end
+  
+  cadmus_pages
+end
+```
 
 Now the PagesController's `show`, `edit`, `update`, and `destroy` actions don't use the "/pages/" part of the URL.  The
 URLs now look like this:
@@ -203,35 +251,40 @@ help them by providing them with a Liquid template variable they can use like so
 
 To do this, you'll need to expose `team` as a Liquid assign variable:
 
-    class TeamPagesController < ApplicationController
-	  include Cadmus::PagesController
-	  
-	  self.page_parent_class = Team   # page's parent is a Team
-	  self.page_parent_name = "team"  # parent ID is in params[:team_id]
-	  self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
-	  
-	  authorize_resource :page
-	  
-	  protected
-	  def page_class
-	    Page
-	  end
-      
-      def liquid_assigns
-        { :team => @page.parent }
-      end
-	end
+```ruby
+class TeamPagesController < ApplicationController
+  include Cadmus::PagesController
+  
+  self.page_parent_class = Team   # page's parent is a Team
+  self.page_parent_name = "team"  # parent ID is in params[:team_id]
+  self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
+  
+  authorize_resource :page
+  
+  protected
+
+  def page_class
+    Page
+  end
+    
+  def liquid_assigns
+    { :team => @page.parent }
+  end
+end
+```
 
 Defining a `liquid_assigns` method will cause Cadmus to use the return value of that method as the Liquid assigns hash.
 (Similarly, you can define `liquid_filters` and `liquid_registers` methods that do what they say on the tin.)
 
 You'll also need to make your Team model usable from Liquid.  The simplest way to do that is using `liquid_methods`:
 
-    class Team < ActiveRecord::Base
-      liquid_methods :name, :uniform_color
-      
-      # everything else in your model...
-    end
+```ruby
+class Team < ActiveRecord::Base
+  liquid_methods :name, :uniform_color
+
+  # everything else in your model...
+end
+```
     
 You could also define a `to_liquid` method that returns a `Liquid::Drop` subclass for Teams, if you need to do things
 more complicated than just return data values.

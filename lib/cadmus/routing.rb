@@ -55,7 +55,7 @@ ActionDispatch::Routing::Mapper.class_eval do
     page_actions = Proc.new do
       get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
       get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
-      put "*page_glob" => "#{controller}#update", :constraints => slug_constraint
+      match "*page_glob" => "#{controller}#update", :constraints => slug_constraint, :via => [:put, :patch]
       delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
     end
     
