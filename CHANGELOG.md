@@ -1,3 +1,8 @@
+## cadmus 0.5.0 (12-06-2013)
+
+* First release that requires Rails 4.0
+* Strong parameters compatibility by default
+
 ## cadmus 0.4.8 (07-16-2013)
 
 * Add license info to gemspec

@@ -212,7 +212,7 @@ module Cadmus
     end
     
     def page_params
-      params[:page]
+      params.require(:page).permit(:name, :slug, :content)
     end
     
     def load_parent_and_page
