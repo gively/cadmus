@@ -15,12 +15,14 @@ module Cadmus
     class Base
       attr_accessor :default_assigns, :default_filters, :default_registers, :html_sanitizer
       
+      DEFAULT_HTML_SANITIZER = defined?(Rails::Html::FullSanitizer) ? Rails::Html::FullSanitizer : HTML::FullSanitizer
+      
       def initialize
         self.default_registers = {}
         self.default_filters = []
         self.default_assigns = {}
         
-        self.html_sanitizer = Rails.application.config.action_view.full_sanitizer || HTML::FullSanitizer.new
+        self.html_sanitizer = Rails.application.config.action_view.full_sanitizer || DEFAULT_HTML_SANITIZER.new
       end
       
       # The preprocess method performs the initial rendering of the Liquid template using the a combination

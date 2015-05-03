@@ -1,3 +1,7 @@
+## cadmus 0.5.1 (05-03-2015)
+
+* Support the sanitizer changes in Rails 4.2
+
 ## cadmus 0.5.0 (12-06-2013)
 
 * First release that requires Rails 4.0
