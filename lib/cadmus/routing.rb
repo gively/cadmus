@@ -10,12 +10,12 @@ module Cadmus
     #   is +test+, because +assert_recognizes+ doesn't always pass the full params hash
     #   including globbed parameters.
     def matches?(request)
-      page_glob = request.symbolized_path_parameters[:page_glob]
-      
+      page_glob = request.path_parameters.symbolize_keys[:page_glob]
+
       # assert_recognizes doesn't pass the full params hash as we would in a real Rails
       # application.  So we have to always pass this constraint if we're testing.
       return true if page_glob.nil? && Rails.env.test?
-      
+
       page_glob.sub(/\A\//, '').split(/\//).all? do |part|
         part =~ /\A[a-z][a-z0-9\-]*\z/
       end
@@ -40,25 +40,25 @@ ActionDispatch::Routing::Mapper.class_eval do
   # * :controller - changes which controller it maps to.  By default, it is "pages" (meaning PagesController).
   # * :shallow - if set to "true", the edit, show, update and destroy routes won't include the "/pages" prefix.  Useful if you're
   #   already inside a unique prefix.
-  def cadmus_pages(options = nil) 
+  def cadmus_pages(options = nil)
     options ||= {}
     options = options.with_indifferent_access
-    
+
     controller = options[:controller] || 'pages'
-    
+
     get "pages" => "#{controller}#index", :as => 'pages'
     get "pages/new" => "#{controller}#new", :as => 'new_page'
     post "pages" => "#{controller}#create"
 
     slug_constraint = Cadmus::SlugConstraint.new
-    
+
     page_actions = Proc.new do
       get "*page_glob/edit" => "#{controller}#edit", :as => 'edit_page', :constraints => slug_constraint
       get "*page_glob" => "#{controller}#show", :as => 'page', :constraints => slug_constraint
       match "*page_glob" => "#{controller}#update", :constraints => slug_constraint, :via => [:put, :patch]
       delete "*page_glob" => "#{controller}#destroy", :constraints => slug_constraint
     end
-    
+
     if options[:shallow]
       instance_eval(&page_actions)
     else
