@@ -10,8 +10,8 @@ module Cadmus
     #   is +test+, because +assert_recognizes+ doesn't always pass the full params hash
     #   including globbed parameters.
     def matches?(request)
-      page_glob = request.symbolized_path_parameters[:page_glob]
-      
+      page_glob = request.path_parameters.symbolize_keys[:page_glob]
+
       # assert_recognizes doesn't pass the full params hash as we would in a real Rails
       # application.  So we have to always pass this constraint if we're testing.
       return true if page_glob.nil? && Rails.env.test?
