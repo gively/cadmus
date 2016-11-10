@@ -70,8 +70,8 @@ module Cadmus
       class << self
         attr_accessor :page_parent_name, :page_parent_class, :find_parent_by
       end
-      
-      before_filter :load_parent_and_page
+
+      before_action :load_parent_and_page
       helper_method :cadmus_renderer
     end
   
