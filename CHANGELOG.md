@@ -1,3 +1,7 @@
+## cadmus 0.5.3 (02-04-2017)
+
+* Make it possible to make `liquid_assigns`, `liquid_filters` and `liquid_registers` private or protected methods in controllers and other Renderables.
+
 ## cadmus 0.5.2 (11-10-2016)
 
 * Rails 5 compatibility fixes

@@ -1,5 +1,5 @@
 module Cadmus
-  
+
   # A Cadmus renderer is an object that handles the rendering of +Liquid::Template+s to output formats
   # such as HTML or plain text.  A renderer provides several features over and above what plain
   # Liquid does:
@@ -9,22 +9,22 @@ module Cadmus
   # * Ability to specify default assigns, filters, and registers and augment them on a per-call basis
   # * Ability to render to multiple output formats from a single renderer
   module Renderers
-    
+
     # The simplest Cadmus renderer.  It will render Liquid templates to HTML and plain text (removing the
     # HTML tags from the plain text output).
     class Base
       attr_accessor :default_assigns, :default_filters, :default_registers, :html_sanitizer
-      
+
       DEFAULT_HTML_SANITIZER = defined?(Rails::Html::FullSanitizer) ? Rails::Html::FullSanitizer : HTML::FullSanitizer
-      
+
       def initialize
         self.default_registers = {}
         self.default_filters = []
         self.default_assigns = {}
-        
+
         self.html_sanitizer = Rails.application.config.action_view.full_sanitizer || DEFAULT_HTML_SANITIZER.new
       end
-      
+
       # The preprocess method performs the initial rendering of the Liquid template using the a combination
       # of the default_filters, default_assigns, default_registers, and any :assigns, :filters, and :registers
       # options passed in as options.
@@ -38,18 +38,18 @@ module Cadmus
       # @option options [Hash] :registers additional register variables that will be made available to the template.
       # @option options [Hash] :filters additional filters to be made available to the template.
       # @return [String] the raw results of rendering the Liquid template.
-      def preprocess(template, format, options={}) 
+      def preprocess(template, format, options={})
         render_args = [
-          default_assigns.merge(options[:assigns] || {}), 
-          { 
+          default_assigns.merge(options[:assigns] || {}),
+          {
             :filters   => default_filters + (options[:filters] || []),
             :registers => default_registers.merge(options[:registers] || {})
           }
-        ]  
-        
+        ]
+
         template.render(*render_args)
       end
-      
+
       # Render a given Liquid template to the specified format.  This renderer implementation supports +:html+ and
       # +:text+ formats, but other implementations may support other formats.
       #
@@ -61,7 +61,7 @@ module Cadmus
       #   available options.
       def render(template, format, options={})
         content = preprocess(template, format, options)
-        
+
         case format.to_sym
         when :html
           content.html_safe
@@ -73,7 +73,7 @@ module Cadmus
       end
     end
   end
-  
+
   # A helper module that can be included in classes that wish to provide a Cadmus renderer.  For
   # example, an Email class might want to provide a renderer so that it can be easily transformed
   # into HTML or text formats.
@@ -98,27 +98,27 @@ module Cadmus
   #       end
   #     end
   module Renderable
-    
+
     # @return a new Cadmus renderer set up using the +default_assigns+, +default_registers+
     #   and +default_filters+ methods, if they exist.
     def cadmus_renderer
       cadmus_renderer_class.new.tap { |renderer| setup_renderer(renderer) }
     end
-    
+
     # @return the Cadmus renderer class to instanciate in the +cadmus_renderer+ method.  By
     #   default, Cadmus::Renderers::Base.
     def cadmus_renderer_class
       Cadmus::Renderers::Base
     end
-    
+
     protected
     # Sets the values of +default_assigns+, +default_registers+ and +default_filters+ on a given
     # renderer using the +liquid_assigns+, +liquid_registers+ and +liquid_filters+ methods, if
     # they're defined.
     def setup_renderer(renderer)
-      renderer.default_assigns = liquid_assigns if respond_to?(:liquid_assigns)
-      renderer.default_registers = liquid_registers if respond_to?(:liquid_registers)
-      renderer.default_filters = liquid_filters if respond_to?(:liquid_filters)
+      renderer.default_assigns = liquid_assigns if respond_to?(:liquid_assigns, true)
+      renderer.default_registers = liquid_registers if respond_to?(:liquid_registers, true)
+      renderer.default_filters = liquid_filters if respond_to?(:liquid_filters, true)
     end
   end
 end
