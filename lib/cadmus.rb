@@ -5,6 +5,7 @@ require "cadmus/controller_extensions"
 require "cadmus/slugs"
 require "cadmus/liquid_template_field"
 require "cadmus/page"
+require "cadmus/tags"
 require "rails"
 
 module Cadmus
