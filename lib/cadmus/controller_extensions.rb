@@ -221,5 +221,15 @@ module Cadmus
         raise ActiveRecord::RecordNotFound.new("No page called #{params[:page_glob]}") unless @page
       end
     end
+
+    def liquid_registers
+      registers = { 'parent' => page_parent }
+
+      if defined?(super)
+        registers.merge(super)
+      else
+        registers
+      end
+    end
   end
 end
