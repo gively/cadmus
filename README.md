@@ -357,4 +357,4 @@ And now the welcome email templates can include `{{ team.name }}` and any other 
 
 ## Copyright and Licensing
 
-Copyright &copy; 2011-2012 Gively, Inc.  Cadmus is released under the MIT license.  For more information, see the LICENSE file.
+Copyright &copy; Gively, Inc.  Cadmus is released under the MIT license.  For more information, see the LICENSE file.
