@@ -1,3 +1,9 @@
+## cadmus 0.6.0 (04-08-2017)
+
+* Expose a `{% page_url %}` tag, which outputs the URL to a page (for easier inter-page linking)
+* Expose a Liquid register called `parent` from controllers that mix in `Cadmus::ControllerExtensions`, which contains the page parent (if present)
+* Extract a mixin module called `Cadmus::LiquidTemplateField`, which makes it easier to add Liquid templates to models
+
 ## cadmus 0.5.3 (02-04-2017)
 
 * Make it possible to make `liquid_assigns`, `liquid_filters` and `liquid_registers` private or protected methods in controllers and other Renderables.

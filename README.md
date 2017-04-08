@@ -14,7 +14,7 @@ ORM you want instead of ActiveRecord.
 
 One additional feature is the ability for pages to have parents.  A parent can be any model object.  Page parent objects allow
 you to create separate "sections" of your site - for example, if you have a project-hosting application that includes multiple
-projects, each of which has its own separate space of CMS pages.  (Page parents aren't intended for creating sub-pages - 
+projects, each of which has its own separate space of CMS pages.  (Page parents aren't intended for creating sub-pages -
 instead, just use forward-slash characters in the page slug to simulate folders, and Cadmus will handle it.)
 
 ## Basic Installation
@@ -30,14 +30,14 @@ The next step is to create a Page model.  Your app can have multiple Page models
 create one.
 
     rails generate model Page name:text slug:string content:text parent_id:integer parent_type:string
-	
-You'll need to tweak the generated migration and model slightly.  In the migration, after the `create_pages` block, add a 
+
+You'll need to tweak the generated migration and model slightly.  In the migration, after the `create_pages` block, add a
 unique index on the parent and slug columns:
 
 ```ruby
 add_index :pages, [:parent_type, :parent_id, :slug], :unique => true
 ```
-	
+
 And in the model, add a `cadmus_page` declaration:
 
 ```ruby
@@ -77,7 +77,7 @@ class PagesController < ApplicationController
   def page_params
     params.require(:page).permit(:name, :slug, :content)
   end
-  
+
   def page_class
     Page
   end
@@ -89,6 +89,16 @@ define a `page_class` method that returns the class for pages it's dealing with.
 classes depending on request parameters, if you need it to - or, you could also set up different controllers for different
 types of page.)
 
+You'll also want to set up an initializer (probably in `config/initializers/cadmus.rb`) that will tell Cadmus how to generate URLs for pages.  This might look like this:
+
+```ruby
+Cadmus::Tags::PageUrl.define_page_path_method do |page_name, parent|
+  page_path(page_name, parent_id: parent)
+end
+```
+
+Doing this will enable markup like this in page templates: `<a href="{% page_url my-other-page %}">My other page</a>`.  The `{% page_url my-other-page %}` will be replaced with the actual URL for the page called `my-other-page`.
+
 Finally, you'll need to create routes for this controller.  Cadmus provides a built-in helper for that:
 
 ```ruby
@@ -96,7 +106,7 @@ MyApp::Application.routes.draw do
   cadmus_pages
 end
 ```
-	
+
 This will create the following routes:
 
 * GET /pages => PagesController#index
@@ -109,15 +119,15 @@ This will create the following routes:
 
 ## Authorization Control
 
-The pages controller is where you'll need to hook into any authorization or authentication system your app might use.  
+The pages controller is where you'll need to hook into any authorization or authentication system your app might use.
 We use CanCan, so here's an example of how we do that:
 
 ```ruby
 class PagesController < ApplicationController
   include Cadmus::PagesController
-  
+
   authorize_resource :page
-  
+
   protected
   def page_class
     Page
@@ -130,7 +140,7 @@ class Ability
   def initialize(user)
     can :read, Page
       return unless user
-	
+
       # in this example, we've added an owner_id column to our Page model
       can :manage, Page, :owner_id => user.id
   end
@@ -154,7 +164,7 @@ DugoutCoach::Application.routes.draw do
     resources :players
       resources :schedule
   end
-  
+
   cadmus_pages # for global pages on your site
 end
 ```
@@ -177,20 +187,20 @@ end
 ```
 
 Now you have a way of separating team-specific pages from global pages on the site.  The URLs for these pages might be,
-for example, http://dugoutcoach.net/teams/cosmonauts/directions, or 
+for example, http://dugoutcoach.net/teams/cosmonauts/directions, or
 http://dugoutcoach.net/teams/cosmonauts/promotions/free-hat-day (remember, Cadmus slugs can contain slashes).  We'll
 now need a TeamPages controller to handle these:
 
 ```ruby
 class TeamPagesController < ApplicationController
   include Cadmus::PagesController
-  
+
   self.page_parent_class = Team   # page's parent is a Team
   self.page_parent_name = "team"  # parent ID is in params[:team_id]
   self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
-  
+
   authorize_resource :page
-  
+
   protected
   def page_class
     Page
@@ -215,7 +225,7 @@ DugoutCoach::Application.routes.draw do
       resources :schedule
       cadmus_pages :controller => :team_pages, :shallow => true
   end
-  
+
   cadmus_pages
 end
 ```
@@ -245,7 +255,7 @@ help them by providing them with a Liquid template variable they can use like so
 
 ```html
 <h1>We're the Cosmonauts!</h1>
-   
+
 <p>Our uniform color this week is {{ team.uniform_color }}!</p>
 ```
 
@@ -254,19 +264,19 @@ To do this, you'll need to expose `team` as a Liquid assign variable:
 ```ruby
 class TeamPagesController < ApplicationController
   include Cadmus::PagesController
-  
+
   self.page_parent_class = Team   # page's parent is a Team
   self.page_parent_name = "team"  # parent ID is in params[:team_id]
   self.find_parent_by = "slug"    # parent ID is the Team's "slug" field rather than "id"
-  
+
   authorize_resource :page
-  
+
   protected
 
   def page_class
     Page
   end
-    
+
   def liquid_assigns
     { :team => @page.parent }
   end
@@ -285,9 +295,65 @@ class Team < ActiveRecord::Base
   # everything else in your model...
 end
 ```
-    
+
 You could also define a `to_liquid` method that returns a `Liquid::Drop` subclass for Teams, if you need to do things
 more complicated than just return data values.
+
+## Liquid Templates on Non-Page Models
+
+Let's say you have another model in your app that you'd like to put a Liquid template on.  For example, perhaps the baseball teams would like to send out a welcome email to their fans.  You might create a `WelcomeEmail` model with a `content` field.
+
+Cadmus provides a convenience mixin to let you make that field a Liquid template.  You can use it like so:
+
+```ruby
+class WelcomeEmail < ActiveRecord::Base
+  include Cadmus::LiquidTemplateField
+
+  liquid_template_field :content_liquid_template, :content
+
+  belongs_to :team
+end
+```
+
+Now if you call `my_welcome_email.content_liquid_template`, you'll get a parsed `Liquid::Template` generated from the value of `my_welcome_email.content`.  You could further make the WelcomeEmail into a `Cadmus::Renderable` to make it render the template:
+
+```ruby
+class WelcomeEmail < ActiveRecord::Base
+  include Cadmus::LiquidTemplateField
+  include Cadmus::Renderable
+
+  liquid_template_field :content_liquid_template, :content
+
+  belongs_to :team
+
+  def rendered_content
+    cadmus_renderer.render(content_liquid_template, :html)
+  end
+end
+```
+
+Presto!  Now you can call `my_welcome_email.rendered_content`.  Since `WelcomeEmail` includes `Cadmus::Renderable`, you can also define `liquid_assigns` to expose variables to the template, for example:
+
+```ruby
+class WelcomeEmail < ActiveRecord::Base
+  include Cadmus::LiquidTemplateField
+  include Cadmus::Renderable
+
+  liquid_template_field :content_liquid_template, :content
+
+  belongs_to :team
+
+  def rendered_content
+    cadmus_renderer.render(content_liquid_template, :html)
+  end
+
+  def liquid_assigns
+    { 'team' => team }
+  end
+end
+```
+
+And now the welcome email templates can include `{{ team.name }}` and any other things derived from the Team model they want.
 
 ## Copyright and Licensing
 
