@@ -1,14 +1,15 @@
 require 'liquid'
 
 module Cadmus
-  
+
   # Adds a +cadmus_page+ extension method to ActiveRecord::Base that sets up a class as a page-like object for
   # Cadmus.
   module Page
     extend ActiveSupport::Concern
-    
+    include Cadmus::LiquidTemplateField
+
     module ClassMethods
-      
+
       # Sets up a model to behave as a Cadmus page.  This will add the following behaviors:
       #
       # * A slug and slug generator field using HasSlug
@@ -33,19 +34,15 @@ module Cadmus
         self.name_field = (options.delete(:name_field) || :name).to_s
 
         belongs_to :parent, :polymorphic => true
-                
+
         validates_presence_of name_field
         validates_uniqueness_of slug_field, :scope => [:parent_id, :parent_type]
         validates_exclusion_of slug_field, :in => %w(pages edit)
-  
+
         scope :global, lambda { where(:parent_id => nil, :parent_type => nil) }
-        
-        class_eval do
-          def liquid_template
-            Liquid::Template.parse(content)
-          end
-        end
-      end      
+
+        liquid_template_field :liquid_template, :content
+      end
     end
   end
 end
