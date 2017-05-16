@@ -73,6 +73,7 @@ module Cadmus
 
       before_action :load_parent_and_page
       helper_method :cadmus_renderer
+      helper_method :liquid_assigns_for_layout
     end
 
     def index
@@ -230,6 +231,10 @@ module Cadmus
       else
         registers
       end
+    end
+
+    def liquid_assigns_for_layout(cms_layout)
+      {}
     end
   end
 end
