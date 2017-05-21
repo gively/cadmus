@@ -51,36 +51,6 @@ You'll need a controller to deal with your pages.  Here's a minimal example of o
 ```ruby
 class PagesController < ApplicationController
   include Cadmus::PagesController
-
-  protected
-  def page_class
-    Page
-  end
-end
-```
-
-If you're on Rails 4 (or using the `strong_parameters` gem) you'll probably want to use forbidden attributes protection.
-Here's how you do that:
-
-```ruby
-class Page < ActiveRecord::Base
-  include ActiveModel::ForbiddenAttributesProtection
-  cadmus_page
-end
-```
-
-```ruby
-class PagesController < ApplicationController
-  include Cadmus::PagesController
-
-  protected
-  def page_params
-    params.require(:page).permit(:name, :slug, :content)
-  end
-
-  def page_class
-    Page
-  end
 end
 ```
 
