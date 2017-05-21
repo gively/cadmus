@@ -307,7 +307,7 @@ Cadmus provides a convenience mixin to let you make that field a Liquid template
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
 
   liquid_template_field :content_liquid_template, :content
 
@@ -319,7 +319,7 @@ Now if you call `my_welcome_email.content_liquid_template`, you'll get a parsed 
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
   include Cadmus::Renderable
 
   liquid_template_field :content_liquid_template, :content
@@ -336,7 +336,7 @@ Presto!  Now you can call `my_welcome_email.rendered_content`.  Since `WelcomeEm
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
   include Cadmus::Renderable
 
   liquid_template_field :content_liquid_template, :content

@@ -4,7 +4,8 @@ module Cadmus
   # Cadmus.
   module Page
     extend ActiveSupport::Concern
-    include Cadmus::LiquidTemplateField
+    include Cadmus::Concerns::LiquidTemplateField
+    include Cadmus::Concerns::ModelWithParent
 
     module ClassMethods
 
@@ -32,8 +33,7 @@ module Cadmus
         cattr_accessor :name_field
         self.name_field = (options.delete(:name_field) || :name).to_s
 
-        belongs_to :parent, :polymorphic => true
-        scope :global, lambda { where(:parent_id => nil, :parent_type => nil) }
+        model_with_parent
 
         validates_presence_of name_field
         validates_uniqueness_of slug_field, :scope => [:parent_id, :parent_type]

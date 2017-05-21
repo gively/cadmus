@@ -2,7 +2,7 @@
 
 * Expose a `{% page_url %}` tag, which outputs the URL to a page (for easier inter-page linking)
 * Expose a Liquid register called `parent` from controllers that mix in `Cadmus::ControllerExtensions`, which contains the page parent (if present)
-* Extract a mixin module called `Cadmus::LiquidTemplateField`, which makes it easier to add Liquid templates to models
+* Extract a mixin module called `Cadmus::Concerns::LiquidTemplateField`, which makes it easier to add Liquid templates to models
 
 ## cadmus 0.5.3 (02-04-2017)
 
