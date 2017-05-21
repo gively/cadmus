@@ -40,7 +40,7 @@ module Cadmus
         validates_exclusion_of slug_field, :in => %w(pages edit)
 
         cattr_accessor :layout_model_name
-        self.layout_model_name = options.delete(:layout_model_name)
+        self.layout_model_name = options.delete(:layout_model_name) || Cadmus.layout_model.try!(:name)
 
         if layout_model
           belongs_to :cms_layout, class_name: layout_model.name

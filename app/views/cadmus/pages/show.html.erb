@@ -1,7 +1,10 @@
 <% page_content = cadmus_renderer.render(@page.liquid_template, :html) -%>
 <% cms_layout = @page.effective_cms_layout -%>
 <% if cms_layout -%>
-  <% assigns = liquid_assigns_for_layout(cms_layout).merge('content_for_layout' => page_content, 'page' => @page) -%>
+  <% assigns = { 'content_for_layout' => page_content, 'page' => @page } -%>
+  <% if defined?(:liquid_assigns_for_layout) -%>
+    <% assigns.reverse_merge!(liquid_assigns_for_layout(cms_layout)) %>
+  <% end -%>
   <%= cadmus_renderer.render(cms_layout.liquid_template, :html, assigns: assigns) %>
 <% else -%>
   <% content_for :content do %>

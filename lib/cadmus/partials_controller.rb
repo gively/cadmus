@@ -8,7 +8,7 @@ module Cadmus
     end
 
     def index
-      @cms_partials = cms_partial_scope.order(cms_partial_scope.klass.name_field).all
+      @cms_partials = cms_partial_scope.order(cms_partial_class.name_field).all
       render 'cadmus/partials/index'
     end
 
@@ -50,11 +50,15 @@ module Cadmus
     # for this request, this will be the "cms_partials" scope defined by the parent object.  If there isn't,
     # this will be the "global" scope of the partial class (i.e. partials with no parent object).
     def cms_partial_scope
-      @cms_partial_scope ||= parent_model ? parent_model.cms_partials : Cadmus.partial_model.global
+      @cms_partial_scope ||= parent_model ? parent_model.cms_partials : cms_partial_class.global
+    end
+
+    def cms_partial_class
+      Cadmus.partial_model
     end
 
     def cms_partial_params
-      params.require(:cms_partial).permit(Cadmus.partial_model.name_field, :content)
+      params.require(:cms_partial).permit(cms_partial_class.name_field, :content)
     end
 
     def load_parent_and_cms_partial

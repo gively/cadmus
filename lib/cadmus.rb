@@ -24,5 +24,8 @@ require "cadmus/engine"
 
 module Cadmus
   extend Cadmus::Concerns::OtherClassAccessor
+
+  other_class_accessor :layout_model
+  other_class_accessor :page_model
   other_class_accessor :partial_model
 end
