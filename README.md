@@ -1,6 +1,6 @@
 # Cadmus: an embeddable CMS for Rails
 
-Cadmus is an embeddable content management system for Rails 3 applications.  It's based on [Liquid](http://liquidmarkup.org)
+Cadmus is an embeddable content management system for Rails applications.  It's based on [Liquid](http://liquidmarkup.org)
 and is designed to be small and unobtrusive.
 
 Cadmus doesn't define controllers or models itself, but rather, provides mixins to add CMS-like functionality to controllers
