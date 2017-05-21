@@ -38,10 +38,11 @@ unique index on the parent and slug columns:
 add_index :pages, [:parent_type, :parent_id, :slug], :unique => true
 ```
 
-And in the model, add a `cadmus_page` declaration:
+And in the model, include `Cadmus::Page` and add a `cadmus_page` declaration:
 
 ```ruby
 class Page < ActiveRecord::Base
+  include Cadmus::Page
   cadmus_page
 end
 ```
