@@ -20,7 +20,10 @@ module Cadmus
           memoized_class = instance_variable_get(class_memo_ivar)
 
           unless memoized_class
-            memoized_class = instance_variable_get(name_ivar).safe_constantize
+            name = instance_variable_get(name_ivar)
+            return unless name
+
+            memoized_class = name.safe_constantize
             instance_variable_set(class_memo_ivar, memoized_class)
           end
 
