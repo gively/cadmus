@@ -43,7 +43,7 @@ module Cadmus
         self.layout_model_name = options.delete(:layout_model_name) || Cadmus.layout_model.try!(:name)
 
         if layout_model
-          belongs_to :cms_layout, class_name: layout_model.name
+          belongs_to :cms_layout, class_name: layout_model.name, optional: true
         end
 
         liquid_template_field :liquid_template, :content
