@@ -22,7 +22,7 @@ module Cadmus
     end
 
     def create
-      @cms_layout = cms_layout.new(cms_layout_params)
+      @cms_layout = cms_layout_scope.new(cms_layout_params)
 
       if @cms_layout.save
         redirect_to(url_for(action: 'index'))
