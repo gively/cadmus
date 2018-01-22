@@ -12,7 +12,7 @@ module Cadmus::RenderingHelper
         assigns.reverse_merge!(liquid_assigns_for_layout(cms_layout))
       end
 
-      cadmus_renderer.render(cms_layout.liquid_template, :html, assigns: assigns)
+      cadmus_renderer.render(cms_layout.liquid_template, :html, assigns: assigns, registers: { 'parent' => cms_layout.parent })
     else
       content_for :content do
         content
