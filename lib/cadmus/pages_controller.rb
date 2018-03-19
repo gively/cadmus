@@ -152,7 +152,7 @@ module Cadmus
     # for this request, this will be the "pages" scope defined by the parent object.  If there isn't,
     # this will be the "global" scope of the page class (i.e. pages with no parent object).
     def page_scope
-      @page_scope ||= page_parent ? page_parent.pages : page_class.global
+      @page_scope ||= parent_model ? parent_model.pages : page_class.global
     end
 
     def page_class
@@ -171,7 +171,7 @@ module Cadmus
     end
 
     def liquid_registers
-      registers = { 'parent' => page_parent }
+      registers = { 'parent' => parent_model, :file_system => liquid_file_system }
 
       if defined?(super)
         registers.merge(super)

@@ -1,6 +1,6 @@
 <h1>
-	<% if @page_parent && @page_parent.respond_to?(:name) -%>
-		<%= @page_parent.name %>
+	<% if @parent_model && @parent_model.respond_to?(:name) -%>
+		<%= @parent_model.name %>
 	<% else -%>
 		Pages
 	<% end -%>
