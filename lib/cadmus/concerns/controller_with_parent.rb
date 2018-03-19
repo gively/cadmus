@@ -61,6 +61,10 @@ module Cadmus
       def find_parent_by
         self.class.find_parent_by || :id
       end
+
+      def liquid_file_system
+        Cadmus::PartialFileSystem.new(parent_model)
+      end
     end
   end
 end
