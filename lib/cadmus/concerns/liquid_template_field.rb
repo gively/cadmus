@@ -15,6 +15,18 @@ module Cadmus
             end
           end
         end
+
+        def validates_template_validity(field_name)
+          validate do |model|
+            content = model.send(field_name)
+
+            begin
+              Liquid::Template.parse(content)
+            rescue Exception => exception
+              model.errors.add(field_name, "failed to parse: #{exception.class.name}: #{exception.message}")
+            end
+          end
+        end
       end
     end
   end

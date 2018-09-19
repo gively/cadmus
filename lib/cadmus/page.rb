@@ -26,6 +26,7 @@ module Cadmus
       # @option options :slug_generator_field the name of the field to be used as the slug generator.
       #   Defaults to the value of +name_field+ if unspecified.
       # @option options :layout_model_name the name of the model to use as a layout for this page class.
+      # @option options :skip_template_validation if present, skips the validation of the content template.
       def cadmus_page(options={})
         options[:slug_generator_field] = options[:name_field] unless options.has_key?(:slug_generator_field)
         has_slug(options)
@@ -47,6 +48,7 @@ module Cadmus
         end
 
         liquid_template_field :liquid_template, :content
+        validates_template_validity :content unless options[:skip_template_validation]
       end
 
       def layout_model

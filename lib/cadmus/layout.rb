@@ -16,6 +16,7 @@ module Cadmus
       #
       # @param options [Hash] options to modify the default behavior
       # @option options :name_field the name of the field to be used as the layout name.  Defaults to +:name+.
+      # @option options :skip_template_validation if present, skips the validation of the content template.
       def cadmus_layout(options = {})
         model_with_parent
 
@@ -24,6 +25,7 @@ module Cadmus
         validates_uniqueness_of name_field, scope: [:parent_id, :parent_type]
 
         liquid_template_field :liquid_template, :content
+        validates_template_validity :content unless options[:skip_template_validation]
       end
     end
   end
