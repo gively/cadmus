@@ -1,3 +1,10 @@
+## cadmus 0.7.0 (09-19-2018)
+
+* BREAKING CHANGE: Cadmus no longer mixes anything into `ActiveRecord::Base` when required; instead, models must explicitly include the mixins they need
+* Layouts
+* Partials
+* Major internal refactors
+
 ## cadmus 0.6.0 (04-08-2017)
 
 * Expose a `{% page_url %}` tag, which outputs the URL to a page (for easier inter-page linking)
