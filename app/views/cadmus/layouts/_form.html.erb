@@ -1,0 +1,11 @@
+<div class="form-group">
+  <%= f.label :name %>
+  <%= f.text_field :name, class: 'form-control' %>
+</div>
+
+<div class="form-group">
+  <%= f.label :content %>
+  <%= f.text_area(:content, :style => "font-family: monospace; min-height: 40vh;", class: 'form-control') %>
+</div>
+
+<%= f.submit class: 'btn btn-primary' %>

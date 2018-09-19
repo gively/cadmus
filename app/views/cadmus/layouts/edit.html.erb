@@ -1,0 +1,5 @@
+<h1>Editing layout <%= @cms_layout.name %></h1>
+
+<%= form_for @cms_layout, url: url_for(action: 'update', id: @cms_layout) do |f| %>
+  <%= render partial: 'cadmus/layouts/form', locals: { f: f } %>
+<% end %>

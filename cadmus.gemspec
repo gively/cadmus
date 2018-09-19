@@ -9,13 +9,13 @@ Gem::Specification.new do |gem|
   gem.homepage      = "http://github.com/gively/cadmus"
   gem.license       = "MIT"
 
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  gem.executables   = `git ls-files -- exe/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "cadmus"
   gem.require_paths = ["lib"]
   gem.version       = Cadmus::VERSION
 
-  gem.add_dependency("rails", ">= 4.0.0")
+  gem.add_dependency("rails", ">= 5.0.0")
   gem.add_dependency("liquid")
 end

@@ -65,12 +65,9 @@ module Cadmus
   module PagesController
     extend ActiveSupport::Concern
     include Cadmus::Renderable
+    include Cadmus::Concerns::ControllerWithParent
 
     included do
-      class << self
-        attr_accessor :page_parent_name, :page_parent_class, :find_parent_by
-      end
-
       before_action :load_parent_and_page
       helper_method :cadmus_renderer
     end
@@ -151,64 +148,15 @@ module Cadmus
 
     protected
 
-    # This gets kind of meta.
-    #
-    # If page_parent_name and page_parent_class are both defined for this class, this method uses it to find
-    # the parent object in which pages live.  For example, if page_parent_class is Blog and page_parent_name
-    # is "blog", then this is equivalent to calling:
-    #
-    #     @page_parent = Blog.where(:id => params["blog_id"]).first
-    #
-    # If you don't want to use :id to find the parent object, then redefine the find_parent_by method to return
-    # what you want to use.
-    def page_parent
-      return @page_parent if @page_parent
-
-      if page_parent_name && page_parent_class
-        parent_id_param = "#{page_parent_name}_id"
-        if params[parent_id_param]
-          @page_parent = page_parent_class.where(find_parent_by => params[parent_id_param]).first
-        end
-      end
-
-      @page_parent
-    end
-
-    # Returns the name of the page parent object.  This will be used for determining the parameter name for
-    # finding the parent object.  For example, if the page parent name is "wiki", the finder will look in
-    # params["wiki_id"] to determine the object ID.
-    #
-    # By default, this will return the value of page_parent_name set at the controller class level, but can
-    # be overridden for cases where the page parent name must be determined on a per-request basis.
-    def page_parent_name
-      self.class.page_parent_name
-    end
-
-    # Returns the class of the page parent object.  For example, if the pages used by this controller are
-    # children of a Section object, this method should return the Section class.
-    #
-    # By default, this will return the value of page_parent_class set at the controller class level, but can
-    # be overridden for cases where the page parent class must be determined on a per-request basis.
-    def page_parent_class
-      self.class.page_parent_class
-    end
-
-    # Returns the field used to find the page parent object.  By default this is :id, but if you need to
-    # find the page parent object using a different parameter (for example, if you use a "slug" field for
-    # part of the URL), this can be changed.
-    #
-    # By default this method takes its value from the "find_parent_by" accessor set at the controller class
-    # level, but it can be overridden for cases where the finder field name should be determined on a
-    # per-request basis.
-    def find_parent_by
-      self.class.find_parent_by || :id
-    end
-
     # Returns the ActiveRecord::Relation that will be used for finding pages.  If there is a page parent
     # for this request, this will be the "pages" scope defined by the parent object.  If there isn't,
     # this will be the "global" scope of the page class (i.e. pages with no parent object).
     def page_scope
-      @page_scope ||= page_parent ? page_parent.pages : page_class.global
+      @page_scope ||= parent_model ? parent_model.pages : page_class.global
+    end
+
+    def page_class
+      Cadmus.page_model
     end
 
     def page_params
@@ -223,7 +171,7 @@ module Cadmus
     end
 
     def liquid_registers
-      registers = { 'parent' => page_parent }
+      registers = { 'parent' => parent_model, :file_system => liquid_file_system }
 
       if defined?(super)
         registers.merge(super)

@@ -1,6 +1,6 @@
 # Cadmus: an embeddable CMS for Rails
 
-Cadmus is an embeddable content management system for Rails 3 applications.  It's based on [Liquid](http://liquidmarkup.org)
+Cadmus is an embeddable content management system for Rails applications.  It's based on [Liquid](http://liquidmarkup.org)
 and is designed to be small and unobtrusive.
 
 Cadmus doesn't define controllers or models itself, but rather, provides mixins to add CMS-like functionality to controllers
@@ -38,10 +38,11 @@ unique index on the parent and slug columns:
 add_index :pages, [:parent_type, :parent_id, :slug], :unique => true
 ```
 
-And in the model, add a `cadmus_page` declaration:
+And in the model, include `Cadmus::Page` and add a `cadmus_page` declaration:
 
 ```ruby
 class Page < ActiveRecord::Base
+  include Cadmus::Page
   cadmus_page
 end
 ```
@@ -51,36 +52,6 @@ You'll need a controller to deal with your pages.  Here's a minimal example of o
 ```ruby
 class PagesController < ApplicationController
   include Cadmus::PagesController
-
-  protected
-  def page_class
-    Page
-  end
-end
-```
-
-If you're on Rails 4 (or using the `strong_parameters` gem) you'll probably want to use forbidden attributes protection.
-Here's how you do that:
-
-```ruby
-class Page < ActiveRecord::Base
-  include ActiveModel::ForbiddenAttributesProtection
-  cadmus_page
-end
-```
-
-```ruby
-class PagesController < ApplicationController
-  include Cadmus::PagesController
-
-  protected
-  def page_params
-    params.require(:page).permit(:name, :slug, :content)
-  end
-
-  def page_class
-    Page
-  end
 end
 ```
 
@@ -307,7 +278,7 @@ Cadmus provides a convenience mixin to let you make that field a Liquid template
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
 
   liquid_template_field :content_liquid_template, :content
 
@@ -319,7 +290,7 @@ Now if you call `my_welcome_email.content_liquid_template`, you'll get a parsed 
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
   include Cadmus::Renderable
 
   liquid_template_field :content_liquid_template, :content
@@ -336,7 +307,7 @@ Presto!  Now you can call `my_welcome_email.rendered_content`.  Since `WelcomeEm
 
 ```ruby
 class WelcomeEmail < ActiveRecord::Base
-  include Cadmus::LiquidTemplateField
+  include Cadmus::Concerns::LiquidTemplateField
   include Cadmus::Renderable
 
   liquid_template_field :content_liquid_template, :content
