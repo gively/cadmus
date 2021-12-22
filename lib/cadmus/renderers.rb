@@ -1,3 +1,5 @@
+require 'rails-html-sanitizer'
+
 module Cadmus
 
   # A Cadmus renderer is an object that handles the rendering of +Liquid::Template+s to output formats
@@ -15,7 +17,7 @@ module Cadmus
     class Base
       attr_accessor :default_assigns, :default_filters, :default_registers, :html_sanitizer
 
-      DEFAULT_HTML_SANITIZER = defined?(Rails::Html::FullSanitizer) ? Rails::Html::FullSanitizer : HTML::FullSanitizer
+      DEFAULT_HTML_SANITIZER = Rails::Html::FullSanitizer
 
       def initialize
         self.default_registers = {}
