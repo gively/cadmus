@@ -13,7 +13,7 @@ module Cadmus
 
       def initialize(tag_name, args, tokens)
         super
-        @page_name = args.strip
+        @page_name = args.strip.gsub(/\A['"](.*)['"]\z/, '$1')
       end
 
       def render(context)
